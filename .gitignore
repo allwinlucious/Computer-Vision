@@ -1,4 +1,4 @@
-/refrences
-/cifar10
-/tensorboard_logs
+refrences/
+cifar10/
+tensorboard_logs/
 notebook_env.db

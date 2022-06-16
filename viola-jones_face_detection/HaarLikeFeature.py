@@ -94,4 +94,4 @@ class HaarLikeFeature:
 
     def predict(self, ii):
         h = self.get_feature_value(ii)
-        return self.weight * (1 if self.polarity * h < self.polarity * self.threshold else -1)
+        return self.weight * (1 if self.polarity * h < self.polarity * self.threshold else 0)

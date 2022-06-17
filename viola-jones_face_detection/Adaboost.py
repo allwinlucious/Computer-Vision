@@ -3,7 +3,7 @@ import numpy as np
 from HaarLikeFeature import HaarLikeFeature
 from HaarLikeFeature import feature_types
 from integralimage import integral_image
-
+from tqdm.auto import tqdm
 
 def create_features(img_height, img_width, min_feature_width, max_feature_width, min_feature_height,
                     max_feature_height):
@@ -51,11 +51,12 @@ def learn(faces, non_faces, num_classifiers=-1, min_feature_height=1, max_featur
     # train
     best_classifiers = []
     for t in range(num_classifiers):  # required classifier
+        print("searching for classifier", t+1, "of ", num_classifiers )
         # normalize the weights
         weights = weights / weights.sum()
         # for each classifier find error
-        classification_errors = np.zeros((num_classifiers, num_imgs))
-        for c in range(num_classifiers):  # generated classifiers
+        classification_errors = np.zeros((len(classifiers), num_imgs))
+        for c in tqdm(range(len(classifiers))):  # generated classifiers
             classifier = classifiers[c]
             for i in range(num_imgs):
                 h = classifier.predict(data[i])

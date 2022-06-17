@@ -39,34 +39,34 @@ def learn(faces, non_faces, num_classifiers=-1, min_feature_height=1, max_featur
     max_feature_height = img_height if max_feature_height == -1 else max_feature_height
     max_feature_width = img_width if max_feature_width == -1 else max_feature_width
 
-    # creating array (image , label , weight)
-    positive = np.hstack((faces, np.ones(num_faces), (np.ones(num_faces) * (1 / (2 * num_faces)))))
-    negative = np.hstack((non_faces, np.ones(num_non_faces) * -1, (np.ones(num_non_faces) * (1 / (2 * num_non_faces)))))
-    data = positive + negative
+    # creating data labels and weights
+    data = faces + non_faces
+    labels = np.hstack((np.ones(num_faces), np.ones(num_non_faces) * -1))
+    weights = np.hstack((np.ones(num_faces) * (1 / (2 * num_faces)), np.ones(num_non_faces) * (1 / (2 * num_non_faces))))
 
     # create weak classifiers
     classifiers = create_features(img_height, img_width, min_feature_width, max_feature_width, min_feature_height,
                                   max_feature_height)
 
     # train
+    best_classifiers = []
     for t in range(num_classifiers):  # required classifier
         # normalize the weights
-        best_classifiers = []
-        data[2] = data[2] / data[2].sum()
+        weights = weights / weights.sum()
         # for each classifier find error
-        classification_errors = np.zeros(num_classifiers, num_imgs)
+        classification_errors = np.zeros((num_classifiers, num_imgs))
         for c in range(num_classifiers):  # generated classifiers
             classifier = classifiers[c]
-            for i in data[0]:
-                h = classifier.predict(data[0][i])
-                classification_errors[c][i] = data[2][i] * abs(h - data[1][i])
+            for i in range(num_imgs):
+                h = classifier.predict(data[i])
+                classification_errors[c][i] = weights[i] * abs(h - labels[i])
         # select best classifier
-        total_errors = np.sum(classification_errors, axis=0)
+        total_errors = np.sum(classification_errors, axis=1)
         best_classifier_indx = np.argmin(total_errors)
         best_classifiers = np.append(best_classifiers, classifiers[best_classifier_indx])
         e = total_errors[best_classifier_indx]
         # update weights
         for i in range(num_imgs):
             if classification_errors[best_classifier_indx, i] == 0:
-                data[2][i] = data[2][i] * e / (1 - e)
+                weights[i] = weights[i] * e / (1 - e)
     return best_classifiers

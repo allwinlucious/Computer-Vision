@@ -14,7 +14,7 @@ class HaarLikeFeature:
     HaarLikeFeature object
     """
 
-    def __int__(self, feature_type, y, x, width, height, threshold, polarity):
+    def __init__(self, feature_type, y, x, width, height, threshold, polarity):
         """
 
         :param feature_type: 1,2,3,4,5

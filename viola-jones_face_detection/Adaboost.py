@@ -65,6 +65,7 @@ def learn(faces, non_faces, num_classifiers=-1, min_feature_height=1, max_featur
         best_classifier_indx = np.argmin(total_errors)
         best_classifiers = np.append(best_classifiers, classifiers[best_classifier_indx])
         e = total_errors[best_classifier_indx]
+        # set weight of classifier
         # update weights
         for i in range(num_imgs):
             if classification_errors[best_classifier_indx, i] == 0:
